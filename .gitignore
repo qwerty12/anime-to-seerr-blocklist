@@ -1,6 +1,7 @@
 # Created by https://www.toptal.com/developers/gitignore/api/go,git,diff,patch,backup,windows,jetbrains,jetbrains+all,jetbrains+iml,visualstudiocode,goland,goland+all,goland+iml,archives,compressedarchive,archlinuxpackages,dotenv
 # Edit at https://www.toptal.com/developers/gitignore?templates=go,git,diff,patch,backup,windows,jetbrains,jetbrains+all,jetbrains+iml,visualstudiocode,goland,goland+all,goland+iml,archives,compressedarchive,archlinuxpackages,dotenv
 
+/anime-to-seerr-blocklist
 /anime-list.xml
 
 ### Archives ###

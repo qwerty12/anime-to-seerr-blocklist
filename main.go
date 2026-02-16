@@ -154,26 +154,27 @@ func getAlreadyBlocklisted(seerrBlocklistClient *seerrApi.Client) (blocklisted m
 func main() {
 	var cacheDir string
 	var verbose bool
-	flag.StringVar(&cacheDir, "cache-dir", cacheDir, "Folder to store downloaded files in. Defaults to executable location")
-	flag.BoolVar(&verbose, "verbose", verbose, "Verbose output")
 
-	if err := godotenv.Load(); err != nil && !errors.Is(err, fs.ErrNotExist) {
+	exe, err := os.Executable()
+	if err != nil {
 		log.Fatal(err)
+	}
+	exeDir := filepath.Dir(exe)
+
+	flag.StringVar(&cacheDir, "cache-dir", exeDir, "Folder to store downloaded files in")
+	flag.BoolVar(&verbose, "verbose", false, "Verbose output")
+	flag.Parse()
+
+	for _, f := range []string{".env", filepath.Join(exeDir, ".env")} {
+		if err := godotenv.Load(f); err != nil && !errors.Is(err, fs.ErrNotExist) {
+			log.Fatalf("%s: %v", f, err)
+		}
 	}
 	seerrHost := os.Getenv("SEERR_HOST")
 	seerrApiKey := os.Getenv("SEERR_API_KEY")
 	seerrUserId, err := strconv.Atoi(os.Getenv("SEERR_USER_ID"))
 	if seerrHost == "" || seerrApiKey == "" || err != nil {
 		log.Fatal("$SEERR_HOST/$SEERR_API_KEY/$SEERR_USER_ID are required")
-	}
-
-	flag.Parse()
-	if cacheDir == "" {
-		exe, err := os.Executable()
-		if err != nil {
-			log.Fatal(err)
-		}
-		cacheDir = filepath.Dir(exe)
 	}
 
 	seerrBlocklistClient, err := seerrApi.NewClient(seerrHost, seerrApiKey, "blocklist")
