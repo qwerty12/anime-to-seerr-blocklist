@@ -113,13 +113,14 @@ func getAlreadyBlocklisted(seerrBlocklistClient *seerrApi.Client) (blocklisted m
 
 	values := url.Values{
 		"take": []string{strconv.Itoa(take)},
-		//"search": []string{""},
+		"skip":   []string{""},
 		"filter": []string{seerrApi.GetBlocklistParamsFilterAll},
+		//"search": []string{""},
 	}
 
 	for {
 		var resp seerrApi.GetBlocklistResponse
-		values.Set("skip", strconv.Itoa(skip))
+		values["skip"][0] = strconv.Itoa(skip)
 
 		err = seerrBlocklistClient.Get("", values, &resp)
 		if err != nil {
@@ -159,13 +160,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	exeDir := filepath.Dir(exe)
+	exe = filepath.Dir(exe)
 
-	flag.StringVar(&cacheDir, "cache-dir", exeDir, "Folder to store downloaded files in")
+	flag.StringVar(&cacheDir, "cache-dir", exe, "Folder to store downloaded files in")
 	flag.BoolVar(&verbose, "verbose", false, "Verbose output")
 	flag.Parse()
 
-	for _, f := range []string{".env", filepath.Join(exeDir, ".env")} {
+	for _, f := range []string{".env", filepath.Join(exe, ".env")} {
 		if err := godotenv.Load(f); err != nil && !errors.Is(err, fs.ErrNotExist) {
 			log.Fatalf("%s: %v", f, err)
 		}
@@ -213,7 +214,7 @@ func main() {
 			err = seerrBlocklistClient.Post("", nil, blocklistReqBody, nil)
 			if err != nil {
 				_, ok = blocklisted[tmdbId]
-				if httpErr, ok2 := errors.AsType[*seerrApi.HTTPError](err); !ok && ok2 && httpErr.StatusCode == http.StatusPreconditionFailed {
+				if err, ok2 := errors.AsType[*seerrApi.HTTPError](err); !ok && ok2 && err.StatusCode == http.StatusPreconditionFailed {
 					// On TMDB, IDs can be shared between shows and movies; Seerr doesn't differentiate, so delete the
 					// existing movie and attempt to re-add the anime series
 					blocklisted[tmdbId] = struct{}{}

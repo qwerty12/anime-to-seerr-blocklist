@@ -70,7 +70,8 @@ func (c *Client) do(method string, endpoint string, queryParams url.Values, reqB
 	} else {
 		var u *url.URL
 		if endpoint == "" {
-			u = &(*c.baseUrlUrl)
+			u2 := *c.baseUrlUrl
+			u = &u2
 		} else {
 			u = c.baseUrlUrl.JoinPath(endpoint)
 		}
