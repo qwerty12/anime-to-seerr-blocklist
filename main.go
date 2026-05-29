@@ -19,8 +19,8 @@ import (
 	"codeberg.org/sdassow/atomic"
 	"github.com/joho/godotenv"
 
-	"anime-to-seerr-blocklist/internal/anime-list"
-	"anime-to-seerr-blocklist/internal/seerr"
+	AnimeList "anime-to-seerr-blocklist/internal/anime-list"
+	seerrApi "anime-to-seerr-blocklist/internal/seerr"
 )
 
 const updateInterval = 24 * time.Hour
@@ -108,7 +108,7 @@ func fetchAndParseAnimeList(cacheDir string) ([]AnimeList.Anime, error) {
 }
 
 func getAlreadyBlocklisted(seerrBlocklistClient *seerrApi.Client) (blocklisted map[int]struct{}, err error) {
-	const take = math.MaxInt16 // 100
+	const take = math.MaxInt16 - (1024 * 16) // 100
 	skip := 0
 
 	values := url.Values{

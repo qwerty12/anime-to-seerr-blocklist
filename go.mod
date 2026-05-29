@@ -1,6 +1,6 @@
 module anime-to-seerr-blocklist
 
-go 1.26.1
+go 1.26.3
 
 require (
 	codeberg.org/sdassow/atomic v1.2.1

@@ -1,3 +1,4 @@
+export GOOS = linux
 export GOAMD64 = v3
 export GOTELEMETRY = off
 
